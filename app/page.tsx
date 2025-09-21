@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   MessageSquare,
@@ -25,7 +24,6 @@ export default function Home() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
-  const [roomsLoading, setRoomsLoading] = useState(true);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -43,14 +41,11 @@ export default function Home() {
 
   const loadRooms = async () => {
     try {
-      setRoomsLoading(true);
       const roomsData = await getRooms();
       setRooms(roomsData);
     } catch (error) {
       console.error("Failed to load rooms:", error);
       toast.error("Failed to load chat rooms");
-    } finally {
-      setRoomsLoading(false);
     }
   };
 

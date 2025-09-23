@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   useAuthStore,
   useChatStore,
@@ -8,47 +8,58 @@ import {
   cleanupChatSocketHandlers,
 } from "@/stores";
 import { socketService } from "@/services/socket";
+import { getStoredToken, getStoredUser } from "@/services/auth";
 
 interface StoreProviderProps {
   children: React.ReactNode;
 }
 
 export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
-  const { user, setLoading } = useAuthStore();
+  const { user, setUser, setLoading } = useAuthStore();
   const { loadUserRooms } = useChatStore();
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Initialize auth state and socket connection
   useEffect(() => {
-    // Initialize auth state
-    const storedUser = localStorage.getItem("auth-storage");
-    if (storedUser) {
+    const initializeAuth = async () => {
       try {
-        const parsed = JSON.parse(storedUser);
-        if (parsed.state?.user) {
-          useAuthStore.getState().setUser(parsed.state.user);
+        const token = getStoredToken();
+        const storedUser = getStoredUser();
+        
+        if (token && storedUser) {
+          setUser(storedUser);
+          // Initialize socket connection if needed
+          socketService.connect();
+          await loadUserRooms();
+          setupChatSocketHandlers();
         }
       } catch (error) {
-        console.error("Error parsing stored auth data:", error);
+        console.error("Error initializing auth:", error);
+      } finally {
+        setLoading(false);
+        setIsInitialized(true);
       }
-    }
-    setLoading(false);
-  }, [setLoading]);
+    };
 
-  useEffect(() => {
-    if (user) {
-      // Initialize socket connection and load rooms
-      socketService.connect();
-      loadUserRooms();
+    initializeAuth();
 
-      // Set up socket event handlers
-      setupChatSocketHandlers();
+    return () => {
+      cleanupChatSocketHandlers();
+      socketService.disconnect();
+    };
+  }, [setLoading, setUser, loadUserRooms]);
 
-      return () => {
-        // Clean up socket handlers and disconnect
-        cleanupChatSocketHandlers();
-        socketService.disconnect();
-      };
-    }
-  }, [user, loadUserRooms]);
+  // Show loading state while initializing
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return <>{children}</>;
 };

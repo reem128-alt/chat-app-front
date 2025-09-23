@@ -11,14 +11,12 @@ import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
 import { LoginFormData, loginSchema } from "@/types/auth";
 import { login } from "@/services/auth";
 import { useAuthStore } from "@/stores/authStore";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { updateUser } = useAuthStore();
-  const router = useRouter();
 
   const {
     register,
@@ -34,10 +32,8 @@ export default function LoginForm() {
       const response = await login(data);
       updateUser(response.user);
       toast.success("Login successful!");
-      // Small delay to ensure state is updated
-      setTimeout(() => {
-        router.push("/chat");
-      }, 100);
+      // Use window.location.href for reliable redirection after login
+      window.location.href = "/chat";
     } catch (error: unknown) {
       console.error("Login failed:", error);
 

@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
   User,
-  getStoredUser,
   getStoredToken,
   logout as authLogout,
 } from "@/services/auth";
@@ -26,14 +25,14 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (user) => {
         const isAuthenticated = !!(user && getStoredToken());
-        set({ user, isAuthenticated });
+        set({ user, isAuthenticated, isLoading: false });
       },
 
       setLoading: (isLoading) => set({ isLoading }),
 
       logout: () => {
         authLogout();
-        set({ user: null, isAuthenticated: false });
+        set({ user: null, isAuthenticated: false, isLoading: false });
       },
 
       updateUser: (userData) => {
@@ -41,34 +40,12 @@ export const useAuthStore = create<AuthState>()(
         if (user) {
           const updatedUser = { ...user, ...userData };
           set({ user: updatedUser });
-        } else {
-          // If no user exists, set the new user data
-          set({ user: userData as User });
         }
       },
     }),
     {
       name: "auth-storage",
       partialize: (state) => ({ user: state.user }),
-      onRehydrateStorage: () => (state) => {
-        if (state) {
-          // Check for stored user data on rehydration
-          const storedUser = getStoredUser();
-          if (storedUser) {
-            state.setUser(storedUser);
-          }
-          state.setLoading(false);
-        }
-      },
     }
   )
 );
-
-// Initialize auth state on app start
-export const initializeAuth = () => {
-  const storedUser = getStoredUser();
-  if (storedUser) {
-    useAuthStore.getState().setUser(storedUser);
-  }
-  useAuthStore.getState().setLoading(false);
-};

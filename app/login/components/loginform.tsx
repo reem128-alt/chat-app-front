@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { LoginFormData, loginSchema } from "@/types/auth";
 import { login } from "@/services/auth";
 import { useAuthStore } from "@/stores/authStore";
@@ -33,7 +33,7 @@ export default function LoginForm() {
       updateUser(response.user);
       toast.success("Login successful!");
       // Use window.location.href for reliable redirection after login
-      window.location.href = "/chat";
+      window.location.href = "/";
     } catch (error: unknown) {
       console.error("Login failed:", error);
 
@@ -60,20 +60,18 @@ export default function LoginForm() {
   };
 
   return (
-    <Card className="backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 border border-purple-500/20 shadow-2xl shadow-purple-500 min-w-[500px] transition-all duration-300 hover:shadow-3xl hover:shadow-purple-500/20">
-      <CardHeader className="space-y-1 pb-8 pt-8">
-        <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl mx-auto mb-6 shadow-lg">
-          <Sparkles className="w-8 h-8 text-white" />
+    <Card className="w-full max-w-xl mx-auto overflow-hidden border border-white/15 bg-gradient-to-b from-slate-950/80 via-slate-900/70 to-slate-950/60 shadow-[0_20px_80px_rgba(2,6,23,0.85)] backdrop-blur-xl">
+      <CardHeader className="space-y-5 pb-6 pt-10 text-center">
+     
+        <div className="space-y-3">
+          <h2 className="text-3xl font-bold text-white">Sign in to continue</h2>
+          <p className="text-sm text-slate-300">
+            Slide back into the calm canvas—everything you left is exactly where you need it.
+          </p>
         </div>
-        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white">
-          Sign In
-        </h2>
-        <p className="text-center text-gray-600 dark:text-gray-300 text-sm">
-          Enter your credentials to access your account
-        </p>
       </CardHeader>
-      <CardContent className="px-8 pb-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <CardContent className="px-10 pb-10">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <div className="space-y-2">
             <Label
               htmlFor="email"
@@ -82,12 +80,12 @@ export default function LoginForm() {
               Email Address
             </Label>
             <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-purple-500 w-5 h-5 transition-colors" />
+              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 w-5 h-5 transition-colors" />
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter your email"
-                className={`pl-12 h-12 bg-white/50 dark:bg-gray-800/50 border-2 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-400 rounded-xl transition-all duration-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 ${
+                className={`pl-12 h-12 bg-white/50 dark:bg-gray-800/50 border-2 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-600 dark:placeholder:text-gray-300 rounded-xl transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/20 ${
                   errors.email
                     ? "border-red-400 focus:border-red-500 focus:ring-red-500/20"
                     : ""
@@ -111,12 +109,12 @@ export default function LoginForm() {
               Password
             </Label>
             <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-purple-500 w-5 h-5 transition-colors" />
+              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 w-5 h-5 transition-colors" />
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
-                className={`pl-12 pr-12 h-12 bg-white/50 dark:bg-gray-800/50 border-2 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-400 rounded-xl transition-all duration-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 ${
+                className={`pl-12 pr-12 h-12 bg-white/50 dark:bg-gray-800/50 border-2 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-600 dark:placeholder:text-gray-300 rounded-xl transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/20 ${
                   errors.password
                     ? "border-red-400 focus:border-red-500 focus:ring-red-500/20"
                     : ""
@@ -126,7 +124,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-500 transition-colors p-1 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-green-500 transition-colors p-1 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20"
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -143,31 +141,28 @@ export default function LoginForm() {
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center space-x-3">
-              <input
-                id="remember"
-                type="checkbox"
-                className="w-4 h-4 text-purple-600 bg-white border-2 border-gray-300 rounded focus:ring-purple-500 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              />
-              <Label
-                htmlFor="remember"
-                className="text-sm text-gray-600 dark:text-gray-300 font-medium"
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-slate-200">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <label className="inline-flex items-center gap-3 text-left">
+                <input
+                  id="remember"
+                  type="checkbox"
+                  className="h-5 w-5 rounded border-white/30 bg-transparent text-emerald-500 focus:ring-emerald-400"
+                />
+                <span>Keep me signed in on this device</span>
+              </label>
+              <a
+                href="#"
+                className="text-xs uppercase tracking-[0.3em] text-emerald-200 hover:text-emerald-100 transition-colors"
               >
-                Remember me
-              </Label>
+                Forgot password?
+              </a>
             </div>
-            <a
-              href="#"
-              className="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors font-semibold"
-            >
-              Forgot password?
-            </a>
           </div>
 
           <Button
             type="submit"
-            className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full h-14 rounded-2xl border border-emerald-400/80 bg-transparent text-lg font-semibold text-white transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-300/10 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -188,13 +183,13 @@ export default function LoginForm() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-white/80 dark:bg-gray-900/80 text-gray-500 dark:text-gray-400">
-                {" Don't have an account?"}
+                Need an account?
               </span>
             </div>
           </div>
           <a
             href="/register"
-            className="mt-4 inline-block text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 transition-colors font-semibold"
+            className="mt-4 inline-block text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition-colors font-semibold"
           >
             Create new account
           </a>

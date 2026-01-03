@@ -73,7 +73,7 @@ export const RoomList: React.FC<RoomListProps> = ({
           No Rooms Yet
         </h3>
         <p className="text-slate-600 dark:text-slate-400 mb-4">
-          Create your first room to start chatting with friends and colleagues!
+          Create your first room to start chatting with friends and colleagues! 
         </p>
         <div className="flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-500">
           <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
@@ -88,10 +88,10 @@ export const RoomList: React.FC<RoomListProps> = ({
       {rooms.map((room) => (
         <Card
           key={room.id}
-          className={`p-4 cursor-pointer transition-all duration-200 hover-lift animate-fade-in ${
+          className={`p-4 cursor-pointer transition-all duration-200 hover-lift animate-fade-in bg-white/5 border-white/10 backdrop-blur ${
             currentRoomId === room.id
-              ? "ring-2 ring-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-700"
-              : "hover:bg-gradient-to-r hover:from-slate-50 hover:to-blue-50/30 dark:hover:from-slate-700/50 dark:hover:to-slate-600/30 border-slate-200 dark:border-slate-700"
+              ? "ring-2 ring-emerald-400 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border-emerald-400/50"
+              : "hover:bg-white/10 hover:border-white/20"
           }`}
           onClick={() => handleRoomClick(room)}
         >
@@ -121,7 +121,7 @@ export const RoomList: React.FC<RoomListProps> = ({
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+              <div className="flex items-center gap-3 text-xs text-white/70">
                 <div className="flex items-center gap-1">
                   <Users className="w-3 h-3" />
                   <span>{room.participants.length}</span>
@@ -131,7 +131,7 @@ export const RoomList: React.FC<RoomListProps> = ({
                   <span>{formatLastActivity(room.lastActivity)}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
                 </div>
               </div>
 
@@ -144,7 +144,7 @@ export const RoomList: React.FC<RoomListProps> = ({
                       e.stopPropagation();
                       onLeaveRoom(room.id);
                     }}
-                    className="border-red-200 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-300 dark:hover:border-red-600 hover:text-red-600 dark:hover:text-red-400 text-xs px-2"
+                    className="bg-white/20  hover:border-red-300 hover:bg-red-500/10 hover:text-red-200 text-xs px-2"
                   >
                     Leave
                   </Button>
@@ -157,7 +157,7 @@ export const RoomList: React.FC<RoomListProps> = ({
                       e.stopPropagation();
                       onEnterRoom(room.id);
                     }}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg text-xs px-2"
+                    className="bg-gradient-to-r from-emerald-400 to-cyan-500 hover:from-emerald-300 hover:to-cyan-400 text-slate-900 font-semibold shadow-lg hover:shadow-xl text-xs px-2"
                   >
                     Enter
                   </Button>
@@ -169,7 +169,7 @@ export const RoomList: React.FC<RoomListProps> = ({
                       e.stopPropagation();
                       onJoinRoom(room.id);
                     }}
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-md hover:shadow-lg text-xs px-2"
+                    className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 text-white shadow-lg hover:shadow-xl text-xs px-2"
                   >
                     Join
                   </Button>

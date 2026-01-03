@@ -1,25 +1,21 @@
-import React from 'react'
-import RegisterForm from './components/registerform'
+import React from "react"
+import RegisterForm from "./components/registerform"
+import { GradientBackground } from "@/components/GradientBackground"
 
 export default function RegisterPage() {
   return (
-    <div className='min-h-screen flex justify-center items-center relative overflow-hidden'>
-      {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900"></div>
-   
-      
-      {/* Content */}
-      <div className="relative z-10 w-full  px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl mt-6 font-bold text-gray-900 dark:text-white mb-2">
-            Join Us Today
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            Create your account and get started
-          </p>
+    <GradientBackground>
+      <section className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
+        <div className="w-full max-w-xl text-center space-y-4">
+          <p className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/5 px-5 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-teal-200">
+            <span className="h-2 w-2 rounded-full bg-gradient-to-r from-teal-300 to-sky-400 animate-pulse" />
+            Register
+          </p> 
         </div>
-        <RegisterForm />
-      </div>
-    </div>
+        <div className="mt-5 w-full max-w-5xl"> 
+            <RegisterForm /> 
+        </div>
+      </section>
+    </GradientBackground>
   )
 }

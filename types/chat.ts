@@ -20,6 +20,7 @@ export interface Participant {
 
 // Message types
 export interface Message {
+  createdAt: string | number | Date;
   id: string;
   content: string;
   sender: {

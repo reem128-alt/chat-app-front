@@ -9,6 +9,7 @@ import {
 } from "@/stores";
 import { socketService } from "@/services/socket";
 import { getStoredToken, getStoredUser } from "@/services/auth";
+import { GradientBackground } from "@/components/GradientBackground";
 
 interface StoreProviderProps {
   children: React.ReactNode;
@@ -52,12 +53,12 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
   // Show loading state while initializing
   if (!isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <GradientBackground className="flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-white"></div>
+          <p className="mt-4 text-white/80">Loading...</p>
         </div>
-      </div>
+      </GradientBackground>
     );
   }
 

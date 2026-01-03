@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useAuthStore } from "@/stores/authStore";
 import { useChatStore } from "@/stores/chatStore";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RoomList } from "@/components/RoomList";
+import { GradientBackground } from "@/components/GradientBackground";
+import { LoadingPage } from "@/components/LoadingPage";
 import { useState } from "react";
 import { Plus, MessageSquare, UserPlus } from "lucide-react";
 import toast from "react-hot-toast";
@@ -38,11 +40,19 @@ export default function ChatPage() {
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [localMessages, setLocalMessages] = useState<typeof messages>([]);
   const [showAddParticipant, setShowAddParticipant] = useState(false);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   // Sync local messages with context messages
   useEffect(() => {
     setLocalMessages(messages);
   }, [messages]);
+
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [localMessages, currentRoom?.id]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -54,29 +64,32 @@ export default function ChatPage() {
   // Show loading while checking authentication
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
+      <LoadingPage message="Loading your chat workspace..." />
     );
   }
 
   // Show login prompt if not authenticated
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="p-8 max-w-md w-full">
-          <h1 className="text-2xl font-bold text-center mb-4">Please Login</h1>
-          <p className="text-center text-gray-600 mb-6">
-            You need to be logged in to access the chat.
-          </p>
-          <Button onClick={() => router.push("/login")} className="w-full">
-            Go to Login
-          </Button>
-        </Card>
-      </div>
+      <GradientBackground>
+        <div className="min-h-screen flex items-center justify-center px-6">
+          <Card className="p-10 max-w-md w-full bg-white/5 border-white/10 backdrop-blur-xl text-center text-white">
+            <div className="w-14 h-14 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shadow-[0_20px_80px_rgba(16,185,129,0.35)]">
+              <MessageSquare className="w-7 h-7 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold mb-3">Please log in</h1>
+            <p className="text-slate-200/80 mb-6">
+              You need to be authenticated to access the chat interface.
+            </p>
+            <Button
+              onClick={() => router.push("/login")}
+              className="w-full bg-gradient-to-r from-emerald-400 to-cyan-500 text-slate-900 font-semibold hover:from-emerald-300 hover:to-cyan-400"
+            >
+              Go to Login
+            </Button>
+          </Card>
+        </div>
+      </GradientBackground>
     );
   }
 
@@ -133,46 +146,39 @@ export default function ChatPage() {
   const canAddParticipants = currentRoom && user;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
+    <GradientBackground>
       {/* Header */}
-      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-10">
+      <header className="bg-white/10 border border-white/10 backdrop-blur-md rounded-b-3xl mx-4 sm:mx-8 lg:mx-16 mt-4 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-16 text-white">
             <div className="flex items-center">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-lg flex items-center justify-center shadow-[0_10px_40px_rgba(16,185,129,0.35)]">
                   <MessageSquare className="w-5 h-5 text-white" />
                 </div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-                  ChatApp
-                </h1>
+                <h1 className="text-xl font-bold">ChatApp</h1>
               </div>
               {currentRoom && (
-                <div className="ml-6 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                    {currentRoom.name}
-                  </span>
+                <div className="ml-6 flex items-center gap-2 text-sm text-emerald-200">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                  <span>{currentRoom.name}</span>
                 </div>
               )}
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-full flex items-center justify-center text-slate-900 text-sm font-semibold">
                   {user.username.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                <span className="text-sm font-medium text-slate-200">
                   {user.username}
                 </span>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  // Add logout functionality here
-                  router.push("/login");
-                }}
-                className="hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:hover:bg-red-900/20 dark:hover:text-red-400 dark:hover:border-red-800"
+                onClick={() => router.push("/login")}
+                className="bg-white/30 text-white hover:border-red-300 hover:bg-red-500/10 transition-colors"
               >
                 Logout
               </Button>
@@ -181,15 +187,15 @@ export default function ChatPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 h-[calc(100vh-140px)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-white h-[calc(100vh-120px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 h-full">
           {/* Room List Sidebar */}
-          <div className="lg:col-span-1">
-            <Card className="h-full flex flex-col bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/50 dark:border-slate-700/50 shadow-lg">
-              <div className="p-6 border-b border-slate-200/50 dark:border-slate-700/50">
+          <div className="lg:col-span-1 h-full min-h-0">
+            <Card className="h-full flex flex-col bg-white/5 border-white/10 backdrop-blur-xl text-white shadow-2xl">
+              <div className="p-6 border-b border-white/10">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-bold flex items-center gap-3 text-slate-800 dark:text-slate-200">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <h2 className="text-lg font-bold flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-lg flex items-center justify-center shadow-[0_15px_50px_rgba(16,185,129,0.35)]">
                       <MessageSquare className="w-4 h-4 text-white" />
                     </div>
                     Chat Rooms
@@ -197,7 +203,7 @@ export default function ChatPage() {
                   <Button
                     size="sm"
                     onClick={() => setShowCreateRoom(!showCreateRoom)}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+                    className="bg-gradient-to-r from-emerald-400 to-cyan-500 hover:from-emerald-300 hover:to-cyan-400 text-slate-900 font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
                   >
                     <Plus className="w-4 h-4 mr-1" />
                     New Room
@@ -205,11 +211,11 @@ export default function ChatPage() {
                 </div>
 
                 {showCreateRoom && (
-                  <div className="space-y-6 p-6 border border-slate-200/50 dark:border-slate-700/50 rounded-xl bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-800/50 dark:to-slate-700/30 backdrop-blur-sm">
+                  <div className="space-y-6 p-6 border border-white/10 rounded-xl bg-white/5 backdrop-blur-xl">
                     <div>
                       <Label
                         htmlFor="roomName"
-                        className="text-sm font-medium text-slate-700 dark:text-slate-300"
+                        className="text-sm font-medium text-white/80"
                       >
                         Room Name
                       </Label>
@@ -218,13 +224,13 @@ export default function ChatPage() {
                         placeholder="Enter room name"
                         value={newRoomName}
                         onChange={(e) => setNewRoomName(e.target.value)}
-                        className="mt-2 border-slate-200 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400"
+                        className="mt-2 border-white/20 bg-white/10 text-white placeholder:text-white/50 focus:border-emerald-400"
                       />
                     </div>
                     <div>
                       <Label
                         htmlFor="roomDescription"
-                        className="text-sm font-medium text-slate-700 dark:text-slate-300"
+                        className="text-sm font-medium text-white/80"
                       >
                         Description (Optional)
                       </Label>
@@ -233,13 +239,13 @@ export default function ChatPage() {
                         placeholder="Enter room description"
                         value={newRoomDescription}
                         onChange={(e) => setNewRoomDescription(e.target.value)}
-                        className="mt-2 border-slate-200 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400"
+                        className="mt-2 border-white/20 bg-white/10 text-white placeholder:text-white/50 focus:border-emerald-400"
                       />
                     </div>
                     <div className="flex gap-3">
                       <Button
                         onClick={handleCreateRoom}
-                        className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+                        className="flex-1 bg-gradient-to-r from-emerald-400 to-cyan-500 hover:from-emerald-300 hover:to-cyan-400 text-slate-900 font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
                         disabled={!newRoomName.trim() || isLoading}
                       >
                         {isLoading ? "Creating..." : "Create Room"}
@@ -251,7 +257,7 @@ export default function ChatPage() {
                           setNewRoomName("");
                           setNewRoomDescription("");
                         }}
-                        className="border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"
+                        className="bg-white/20 text-white hover:bg-white/10"
                       >
                         Cancel
                       </Button>
@@ -278,53 +284,50 @@ export default function ChatPage() {
           </div>
 
           {/* Chat Area */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 h-full min-h-0">
             {!currentRoom ? (
-              <Card className="h-full flex items-center justify-center bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/50 dark:border-slate-700/50 shadow-lg">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <MessageSquare className="w-10 h-10 text-blue-500 dark:text-blue-400" />
+              <Card className="h-full flex items-center justify-center bg-white/5 border-white/10 backdrop-blur-xl text-white shadow-2xl">
+                <div className="text-center space-y-4">
+                  <div className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_20px_80px_rgba(16,185,129,0.45)]">
+                    <MessageSquare className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-4">
-                    Welcome to ChatApp
-                  </h3>
-                  <p className="text-slate-600 dark:text-slate-400 text-lg mb-8 max-w-md">
+                  <h3 className="text-2xl font-bold">Welcome to ChatApp</h3>
+                  <p className="text-slate-200/80 text-lg mb-6 max-w-md mx-auto">
                     Choose a room from the sidebar to start chatting with your
-                    friends and colleagues
+                    team in real time.
                   </p>
-                  <div className="flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-500">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <div className="flex items-center justify-center gap-2 text-sm text-slate-300">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
                     <span>Ready to connect</span>
                   </div>
                 </div>
               </Card>
             ) : (
-              /* Chat Interface */
-              <Card className="h-full flex flex-col bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border-slate-200/50 dark:border-slate-700/50 shadow-lg">
+              <Card className="h-full flex flex-col bg-white/5 border-white/10 backdrop-blur-xl text-white shadow-2xl">
                 {/* Chat Header */}
-                <div className="p-6 border-b border-slate-200/50 dark:border-slate-700/50 bg-gradient-to-r from-slate-50 to-blue-50/30 dark:from-slate-800/50 dark:to-slate-700/30">
+                <div className="p-6 border-b border-white/10 bg-white/5">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-[0_15px_60px_rgba(16,185,129,0.4)]">
                         <MessageSquare className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">
+                        <h3 className="text-xl font-bold">
                           {currentRoom.name}
                         </h3>
                         {currentRoom.description && (
-                          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                          <p className="text-sm text-slate-200/80 mt-1">
                             {currentRoom.description}
                           </p>
                         )}
                         <div className="flex items-center gap-4 mt-2">
-                          <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-500">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <div className="flex items-center gap-1 text-xs text-slate-300">
+                            <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
                             <span>
                               {currentRoom.participants.length} online
                             </span>
                           </div>
-                          <div className="text-xs text-slate-500 dark:text-slate-500">
+                          <div className="text-xs text-slate-300">
                             {currentRoom.participants.length} participant(s)
                           </div>
                         </div>
@@ -336,7 +339,7 @@ export default function ChatPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setShowAddParticipant(true)}
-                          className="border-slate-200 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600"
+                          className="border-white/20 bg-white/10"
                         >
                           <UserPlus className="w-4 h-4 mr-1" />
                           Add People
@@ -349,7 +352,7 @@ export default function ChatPage() {
                           setCurrentRoom(null);
                           setLocalMessages([]);
                         }}
-                        className="border-slate-200 dark:border-slate-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-300 dark:hover:border-red-600 hover:text-red-600 dark:hover:text-red-400"
+                         className="border-white/20 bg-white/10"
                       >
                         Leave Room
                       </Button>
@@ -358,21 +361,37 @@ export default function ChatPage() {
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-slate-50/50 to-transparent dark:from-slate-800/30 dark:to-transparent custom-scrollbar">
+                <div
+                  ref={messagesContainerRef}
+                  className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-white/5 via-transparent to-transparent custom-scrollbar"
+                >
                   {localMessages.length === 0 ? (
                     <div className="text-center mt-12">
-                      <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <MessageSquare className="w-8 h-8 text-blue-500 dark:text-blue-400" />
+                      <div className="w-16 h-16 bg-gradient-to-br from-emerald-400/30 to-cyan-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <MessageSquare className="w-8 h-8 text-emerald-300" />
                       </div>
-                      <h4 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                      <h4 className="text-lg font-semibold text-white mb-2">
                         No messages yet
                       </h4>
-                      <p className="text-slate-500 dark:text-slate-400">
+                      <p className="text-slate-300">
                         Start the conversation by sending your first message!
                       </p>
                     </div>
                   ) : (
-                    localMessages.map((message) => (
+                    localMessages.map((message) => {
+                      const rawTimestamp = message.createdAt ?? message.timestamp;
+                      const parsedDate = rawTimestamp
+                        ? new Date(rawTimestamp)
+                        : null;
+                      const formattedTime =
+                        parsedDate && !Number.isNaN(parsedDate.getTime())
+                          ? parsedDate.toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : "—";
+
+                      return (
                       <div
                         key={message.id}
                         className={`flex gap-3 message-enter animate-fade-in ${
@@ -382,42 +401,30 @@ export default function ChatPage() {
                         }`}
                       >
                         {message.sender.id !== user.id && (
-                          <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-full flex items-center justify-center text-slate-900 text-sm font-semibold flex-shrink-0">
                             {message.sender.username.charAt(0).toUpperCase()}
                           </div>
                         )}
                         <div className="flex flex-col max-w-xs lg:max-w-md">
                           {message.sender.id !== user.id && (
-                            <div className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 px-1">
+                            <div className="text-xs font-medium text-slate-200 mb-1 px-1">
                               {message.sender.username}
                             </div>
                           )}
                           <div
-                            className={`px-4 py-3 rounded-2xl shadow-sm ${
+                            className={`px-4 py-3 rounded-2xl shadow-lg ${
                               message.sender.id === user.id
-                                ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-br-md"
-                                : "bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-600 rounded-bl-md"
+                                ? "bg-gradient-to-r from-emerald-400 to-cyan-500 text-slate-900 rounded-br-md"
+                                : "bg-white/10 text-white border border-white/10 rounded-bl-md backdrop-blur-md"
                             }`}
                           >
                             <div className="text-sm leading-relaxed">
                               {message.content}
                             </div>
                           </div>
-                          <div
-                            className={`text-xs text-slate-500 dark:text-slate-400 mt-1 px-1 ${
-                              message.sender.id === user.id
-                                ? "text-right"
-                                : "text-left"
-                            }`}
-                          >
-                            {new Date(message.timestamp).toLocaleTimeString(
-                              [],
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}
-                          </div>
+                          <span className="text-xs text-slate-300 mt-1 text-right">
+                            {formattedTime}
+                          </span>
                         </div>
                         {message.sender.id === user.id && (
                           <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
@@ -425,39 +432,37 @@ export default function ChatPage() {
                           </div>
                         )}
                       </div>
-                    ))
+                    );
+                    })
                   )}
                 </div>
 
                 {/* Message Input */}
-                <div className="p-6 border-t border-slate-200/50 dark:border-slate-700/50 bg-gradient-to-r from-slate-50/50 to-blue-50/30 dark:from-slate-800/30 dark:to-slate-700/20">
-                  <div className="flex gap-3">
-                    <div className="flex-1 relative">
-                      <Input
-                        placeholder="Type your message..."
-                        value={messageInput}
-                        onChange={handleTyping}
-                        onKeyPress={handleKeyPress}
-                        disabled={isLoading}
-                        className="pr-12 border-slate-200 dark:border-slate-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-full bg-white dark:bg-slate-700 shadow-sm"
-                      />
-                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                          <MessageSquare className="w-3 h-3 text-white" />
-                        </div>
+                <div className="p-6 border-t border-white/10 bg-white/5 backdrop-blur-xl">
+                  <div className="space-y-4">
+                    {/* Message Input */}
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <Input
+                          value={messageInput}
+                          onChange={handleTyping}
+                          onKeyDown={handleKeyPress}
+                          placeholder="Type your message..."
+                          className="border-white/20 bg-white/10 text-white placeholder:text-white/50 focus:border-emerald-400"
+                        />
                       </div>
+                      <Button
+                        onClick={handleSendMessage}
+                        disabled={!messageInput.trim()}
+                        className="bg-gradient-to-r from-emerald-400 to-cyan-500 hover:from-emerald-300 hover:to-cyan-400 text-slate-900 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isLoading ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          "Send"
+                        )}
+                      </Button>
                     </div>
-                    <Button
-                      onClick={handleSendMessage}
-                      disabled={!messageInput.trim() || isLoading}
-                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-full px-6"
-                    >
-                      {isLoading ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        "Send"
-                      )}
-                    </Button>
                   </div>
                 </div>
               </Card>
@@ -476,6 +481,6 @@ export default function ChatPage() {
           currentUserId={user.id}
         />
       )}
-    </div>
+    </GradientBackground>
   );
 }

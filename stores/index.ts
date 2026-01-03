@@ -1,4 +1,4 @@
-export { useAuthStore, initializeAuth } from "./authStore";
+export { useAuthStore } from "./authStore";
 export {
   useChatStore,
   setupChatSocketHandlers,

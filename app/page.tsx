@@ -129,7 +129,7 @@ export default function Home() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full border-white/20 text-white"
+                      className="w-full text-black "
                     >
                       <Users className="w-4 h-4 mr-2" />
                       Find People

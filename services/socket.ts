@@ -25,7 +25,8 @@ export interface IMessageResponse {
     username: string;
     avatar?: string;
   };
-  timestamp: Date;
+  timestamp: Date | string | number;
+  createdAt?: string | number | Date;
   messageType: string;
 }
 

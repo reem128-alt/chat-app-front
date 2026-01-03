@@ -264,12 +264,28 @@ export const setupChatSocketHandlers = () => {
   const store = useChatStore.getState();
 
   // Message handlers
-  socketService.onNewMessage((message: Message) => {
-    store.addMessage(message);
+  socketService.onNewMessage((message) => {
+    store.addMessage({
+      id: message.id,
+      content: message.content,
+      sender: message.sender,
+      timestamp: new Date(message.timestamp),
+      createdAt: message.createdAt ?? message.timestamp,
+      messageType: message.messageType,
+    });
   });
 
-  socketService.onRecentMessages((messages: Message[]) => {
-    store.setMessages(messages);
+  socketService.onRecentMessages((messages) => {
+    store.setMessages(
+      messages.map((message) => ({
+        id: message.id,
+        content: message.content,
+        sender: message.sender,
+        timestamp: new Date(message.timestamp),
+        createdAt: message.createdAt ?? message.timestamp,
+        messageType: message.messageType,
+      }))
+    );
   });
 
   // User event handlers
